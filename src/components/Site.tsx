@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Lenis from "lenis";
 import type { Dictionary } from "@/i18n/dictionaries/en";
-import { LOCALES, LOCALE_META, type Locale } from "@/i18n/config";
+import { BASE_PATH, LOCALES, LOCALE_META, type Locale } from "@/i18n/config";
 import { DEFAULT_CONFIG, WHATSAPP_NUMBER, decodeConfig, encodeConfig, type Config, type Pkg } from "@/lib/catalog";
 import { gsap, ScrollTrigger, useGSAP, scrollToId, setLenis, prefersReducedMotion } from "@/lib/motion";
 import Hero from "./Hero";
@@ -22,7 +22,9 @@ function Nav({ dict, lang }: { dict: Dictionary; lang: Locale }) {
   const switchTo = (l: Locale) => (e: React.MouseEvent) => {
     e.preventDefault();
     // Full page load on purpose: <html lang/dir> and fonts change per language.
-    window.location.assign(new URL(`/${l}${window.location.search}${window.location.hash}`, window.location.origin).href);
+    window.location.assign(
+      new URL(`${BASE_PATH}/${l}${window.location.search}${window.location.hash}`, window.location.origin).href,
+    );
   };
   return (
     <header className="nav">
@@ -38,7 +40,7 @@ function Nav({ dict, lang }: { dict: Dictionary; lang: Locale }) {
         <div className="nav-end">
           <div className="lang" role="group" aria-label={t.language}>
             {LOCALES.map((l) => (
-              <a key={l} href={`/${l}`} hrefLang={l} aria-current={l === lang ? "true" : undefined} onClick={switchTo(l)}>
+              <a key={l} href={`${BASE_PATH}/${l}`} hrefLang={l} aria-current={l === lang ? "true" : undefined} onClick={switchTo(l)}>
                 {LOCALE_META[l].label}
               </a>
             ))}

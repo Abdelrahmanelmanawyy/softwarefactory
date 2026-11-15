@@ -4,7 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } fr
 
 const noopSubscribe = () => () => {};
 import type { Dictionary } from "@/i18n/dictionaries/en";
-import { LOCALE_META, type Locale } from "@/i18n/config";
+import { BASE_PATH, LOCALE_META, type Locale } from "@/i18n/config";
 import {
   COLORS,
   COLOR_HEX,
@@ -90,7 +90,7 @@ export default function Configurator({ dict, lang, config, update }: Props) {
     update({ features: FEATURES.filter((x) => next.includes(x)) });
   };
 
-  const shareLink = `${origin}/${lang}?${encodeConfig(config)}`;
+  const shareLink = `${origin}${BASE_PATH}/${lang}?${encodeConfig(config)}`;
   const featureNames = config.features.map((f) => t.features[f]).join(", ") || t.none;
   const businessName = config.name.trim() || dict.mock[config.sector].name;
   const message = t.whatsapp

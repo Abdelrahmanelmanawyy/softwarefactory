@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { Space_Grotesk, JetBrains_Mono, Fraunces, IBM_Plex_Sans_Arabic } from "next/font/google";
-import { LOCALES, LOCALE_META, hasLocale } from "@/i18n/config";
+import { BASE_PATH, LOCALES, LOCALE_META, hasLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import "../globals.css";
 
@@ -30,8 +30,8 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
     title: dict.meta.title,
     description: dict.meta.description,
     alternates: {
-      canonical: `/${lang}`,
-      languages: Object.fromEntries(LOCALES.map((l) => [l, `/${l}`])),
+      canonical: `${BASE_PATH}/${lang}`,
+      languages: Object.fromEntries(LOCALES.map((l) => [l, `${BASE_PATH}/${l}`])),
     },
     openGraph: { title: dict.meta.title, description: dict.meta.description, locale: LOCALE_META[lang].intl },
   };
