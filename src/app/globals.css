@@ -290,7 +290,7 @@ html[lang="ar"] .h2 {
   inset: 0 0 auto;
   z-index: 50;
   height: var(--nav-h);
-  background: rgb(11 21 16 / 0.72);
+  background: rgb(11 21 16 / 0.92);
   backdrop-filter: blur(14px) saturate(1.2);
   -webkit-backdrop-filter: blur(14px) saturate(1.2);
   border-bottom: 1px solid rgb(243 239 227 / 0.08);
@@ -416,8 +416,12 @@ html[lang="ar"] .h2 {
     box-shadow: 0 0 0 0 rgb(166 200 147 / 0);
   }
 }
+.hero-copy {
+  container-type: inline-size;
+}
+/* Sized from the column width so the longest word of every language fits. */
 .hero-title {
-  font-size: clamp(3rem, 7.2vw, 6.6rem);
+  font-size: clamp(2.5rem, 16cqi, 6.6rem);
   line-height: 0.92;
   letter-spacing: -0.045em;
   font-weight: 600;
@@ -437,10 +441,19 @@ html[lang="ar"] .h2 {
   font-weight: 400;
   letter-spacing: -0.03em;
 }
+html[lang="en"] .hero-title {
+  font-size: clamp(2.5rem, 14.6cqi, 6.6rem);
+}
 html[lang="ar"] .hero-title {
   letter-spacing: 0;
-  line-height: 1.2;
+  line-height: 1.15;
   font-weight: 700;
+  font-size: clamp(2.6rem, 17cqi, 6.4rem);
+}
+/* Arabic dots and tails sit below the baseline: give the mask room for them. */
+html[lang="ar"] .hero-title .line {
+  padding-bottom: 0.24em;
+  margin-bottom: -0.12em;
 }
 html[lang="ar"] .hero-title .hl {
   font-family: var(--sans);
@@ -1505,55 +1518,57 @@ html[lang="ar"] .station h3 {
   gap: clamp(32px, 5vw, 72px);
   align-items: start;
 }
-/* Desktop: the devices stick to the top of the viewport and the ticket to the
-   bottom, so both stay visible while the visitor works through the steps. */
+/* Desktop: devices and ticket travel together as ONE sticky block, and the
+   devices are sized from the viewport height so the ticket never covers them. */
 .cfg-stage {
-  align-self: stretch;
+  --ticket-h: 250px;
+  position: sticky;
+  top: calc(var(--nav-h) + 16px);
+  align-self: start;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 .cfg-devices {
-  position: sticky;
-  top: calc(var(--nav-h) + 20px);
-  z-index: 1;
+  position: relative;
+  width: min(100%, max(300px, calc((100svh - var(--nav-h) - 16px - var(--ticket-h) - 36px) * 1.5)));
+  margin-inline: auto;
 }
 .ticket {
-  position: sticky;
-  bottom: 16px;
-  margin-top: auto;
-  z-index: 2;
   box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.6);
 }
 .ticket-lines {
-  max-height: 112px;
-  overflow-y: auto;
-  scrollbar-width: thin;
+  display: none;
 }
-.ticket-actions {
-  display: grid;
-  grid-template-columns: 1.3fr 1fr;
-  gap: 8px;
-}
-.ticket-actions .btn {
-  padding-inline: 14px;
-}
-@media (max-height: 960px) and (min-width: 981px) {
-  .laptop {
-    width: 68%;
-  }
-  .phone {
-    width: 21%;
-  }
-  .ticket {
-    padding-block: 16px 14px;
+@media (min-height: 900px) and (min-width: 981px) {
+  .cfg-stage {
+    --ticket-h: 340px;
   }
   .ticket-lines {
-    max-height: 80px;
+    display: grid;
+    max-height: 96px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+}
+@media (min-width: 981px) {
+  .ticket {
+    padding-block: 16px 14px;
   }
   .ticket-note {
     display: none;
   }
+}
+.ticket-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 8px;
+}
+.ticket-actions .btn {
+  padding-inline: 14px;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.2;
 }
 .step {
   border: 0;
@@ -1865,7 +1880,6 @@ html[lang="ar"] .ticket-head {
 }
 .ticket-lines {
   padding-block: 10px;
-  display: grid;
   gap: 6px;
 }
 .ticket-lines > div {
@@ -1978,6 +1992,7 @@ html[lang="ar"] .ticket-head {
     box-shadow: none;
   }
   .ticket-lines {
+    display: grid;
     max-height: none;
   }
   .cfg-controls {
@@ -2014,6 +2029,9 @@ html[lang="ar"] .ticket-head {
   }
 }
 @media (max-width: 560px) {
+  .ticket-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
   .opt-grid-3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
