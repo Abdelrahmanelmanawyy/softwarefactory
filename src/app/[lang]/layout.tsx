@@ -4,6 +4,8 @@ import { Space_Grotesk, JetBrains_Mono, Fraunces, IBM_Plex_Sans_Arabic } from "n
 import { BASE_PATH, LOCALES, LOCALE_META, hasLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/get-dictionary";
 import "../globals.css";
+import "../template.css";
+import "../quiz.css";
 
 const display = Space_Grotesk({ variable: "--font-display", subsets: ["latin", "latin-ext"], display: "swap" });
 const mono = JetBrains_Mono({ variable: "--font-mono", subsets: ["latin", "latin-ext"], display: "swap" });

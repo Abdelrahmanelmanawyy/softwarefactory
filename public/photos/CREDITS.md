@@ -1,0 +1,9 @@
+Photos are from Pexels (https://www.pexels.com/license/): free for commercial use, no attribution required.
+
+gym: 1.webp = https://www.pexels.com/photo/116078/, 2.webp = https://www.pexels.com/photo/29224211/, 3.webp = https://www.pexels.com/photo/1552242/, 4.webp = https://www.pexels.com/photo/4162485/, 5.webp = https://www.pexels.com/photo/841130/
+restaurant: 1.webp = https://www.pexels.com/photo/19569909/, 2.webp = https://www.pexels.com/photo/13369919/, 3.webp = https://www.pexels.com/photo/38127716/, 4.webp = https://www.pexels.com/photo/6288439/, 5.webp = https://www.pexels.com/photo/2977515/
+clinic: 1.webp = https://www.pexels.com/photo/7108318/, 2.webp = https://www.pexels.com/photo/4269274/, 3.webp = https://www.pexels.com/photo/12745979/, 4.webp = https://www.pexels.com/photo/4266936/, 5.webp = https://www.pexels.com/photo/4266948/
+auto: 1.webp = https://www.pexels.com/photo/5233259/, 2.webp = https://www.pexels.com/photo/4116225/, 3.webp = https://www.pexels.com/photo/8985455/, 4.webp = https://www.pexels.com/photo/6870296/, 5.webp = https://www.pexels.com/photo/29284925/
+store: 1.webp = https://www.pexels.com/photo/5490970/, 2.webp = https://www.pexels.com/photo/7618822/, 3.webp = https://www.pexels.com/photo/37080706/, 4.webp = https://www.pexels.com/photo/4914811/, 5.webp = https://www.pexels.com/photo/5531746/
+startup: 1.webp = https://www.pexels.com/photo/29267512/, 2.webp = https://www.pexels.com/photo/39205103/, 3.webp = https://www.pexels.com/photo/6424590/, 4.webp = https://www.pexels.com/photo/3277808/, 5.webp = https://www.pexels.com/photo/7643742/
+store products: p1.webp = https://www.pexels.com/photo/8286100/, p2.webp = https://www.pexels.com/photo/4641825/, p3.webp = https://www.pexels.com/photo/8346226/, p4.webp = https://www.pexels.com/photo/3735146/

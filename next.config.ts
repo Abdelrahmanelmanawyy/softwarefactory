@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
   trailingSlash: false,
   basePath,
   env: { NEXT_PUBLIC_BASE_PATH: basePath },
+  // Only for `npm run dev` (the static export uses public/_redirects and the Pages index.html).
+  ...(process.env.NODE_ENV === "development" && {
+    redirects: async () => [{ source: "/", destination: "/tr", permanent: false }],
+  }),
   turbopack: { root: __dirname },
 };
 

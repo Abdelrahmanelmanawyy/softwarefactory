@@ -5,17 +5,24 @@ Turkish (default), English and Arabic (RTL).
 
 - `/` redirects to `/tr`; pages live at `/tr`, `/en`, `/ar`.
 - Hero: the sample website assembles itself on a production line, then cycles through sectors.
-- Order desk: visitors configure sector, package, style and features, see the live price and
-  delivery date, and send the order to WhatsApp. The configuration is kept in the URL so it can be shared.
+- Order desk: one question at a time (business, name, design, palette, style, size, features, speed).
+  Every answer rebuilds the laptop and phone previews and the price. The last step is the order
+  ticket, sent by WhatsApp or e-mail. The answers are kept in the URL so an order can be shared.
+- Templates: one real sample website per sector, with photos. Each is also a full-screen page at
+  `/<lang>/demo/<sector>` (for example `/tr/demo/gym?n=PowerGym`).
 
 ## Edit content
 
 | What | Where |
 | --- | --- |
 | WhatsApp number | `WHATSAPP_NUMBER` in `src/lib/catalog.ts` |
-| Prices, delivery days, add-ons | `src/lib/catalog.ts` |
-| All text (TR / EN / AR) | `src/i18n/dictionaries/*.ts` |
-| Colours, fonts, layout | `src/app/globals.css` |
+| E-mail orders | `WEB3FORMS_KEY` (free key from web3forms.com) or `ORDER_EMAIL` in `src/lib/catalog.ts` |
+| Prices, delivery days, add-ons, logo and express fees | `src/lib/catalog.ts` |
+| All text, including the sample websites (TR / EN / AR) | `src/i18n/dictionaries/*.ts` |
+| Template photos | `public/photos/<sector>/` (1 = hero, 2-5 = sections; `-sm` = 640px copy). Sources in `public/photos/CREDITS.md` |
+| Site colours, fonts, layout | `src/app/globals.css` |
+| Template design | `src/app/template.css` and `src/components/MockSite.tsx` |
+| Order desk design | `src/app/quiz.css` and `src/components/Configurator.tsx` |
 | Logo | `src/components/Logo.tsx` |
 
 ## Develop

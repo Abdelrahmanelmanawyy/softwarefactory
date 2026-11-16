@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import { SECTORS, SECTOR_THEME, type Feature, type Sector } from "@/lib/catalog";
-import { gsap, useGSAP, SNAP } from "@/lib/motion";
+import { gsap, useGSAP, SNAP, scrollTour } from "@/lib/motion";
 import MockSite from "./MockSite";
 
 const HERO_FEATURES: Feature[] = ["catalog", "booking", "whatsapp"];
@@ -71,42 +71,58 @@ export default function Hero({ dict, name, onName, onSector, onBuild, onPricing 
             .to(q(".hero-machine"), { opacity: 1, y: 0, duration: 1, ease: SNAP }, 0.2)
             .to(q(".meter-num"), { opacity: 1, duration: 0.3 }, 0.8);
 
+          // The page is longer than the frame, so the frame scrolls to each part
+          // just before it is pressed, like a camera following the line.
+          const scroller = q(".ms-scroll")[0] as HTMLElement;
+          const scrollPos = { y: 0 };
+          const STEP = 0.56;
           parts.forEach((p, i) => {
             if (!p) return;
-            const at = 1.05 + i * 0.42;
+            const at = 1.05 + i * STEP;
             tl.call(
               () => {
-                const a = screen.getBoundingClientRect();
-                const b = p.getBoundingClientRect();
-                gsap.set(press, { x: b.left - a.left, y: b.top - a.top, width: b.width, height: b.height });
-                rows[i].dataset.state = "active";
+                const top = p.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
+                const y = Math.max(0, Math.min(top - scroller.clientHeight * 0.14, scroller.scrollHeight - scroller.clientHeight));
+                gsap.to(scrollPos, { y, duration: 0.3, ease: "power2.inOut", onUpdate: () => (scroller.scrollTop = scrollPos.y) });
               },
               [],
-              at,
+              at - 0.32,
             )
+              .call(
+                () => {
+                  const a = screen.getBoundingClientRect();
+                  const b = p.getBoundingClientRect();
+                  const top = Math.max(b.top - a.top, 0);
+                  const bottom = Math.min(b.bottom - a.top, a.height);
+                  gsap.set(press, { x: b.left - a.left, y: top, width: b.width, height: Math.max(bottom - top, 24) });
+                  rows[i].dataset.state = "active";
+                },
+                [],
+                at,
+              )
               .fromTo(press, { opacity: 0, scale: 1.08 }, { opacity: 1, scale: 1, duration: 0.2, ease: "power4.in" }, at)
               .call(() => {
                 done(p);
                 done(rows[i]);
               }, [], at + 0.2)
-              .fromTo(p, { scale: 0.985 }, { scale: 1, duration: 0.45, ease: SNAP, clearProps: "scale" }, at + 0.2)
               .to(press, { opacity: 0, duration: 0.25 }, at + 0.28)
               .to(count, { v: ((i + 1) / parts.length) * 3, duration: 0.4, ease: "none", onUpdate: () => (num.textContent = String(Math.round(count.v))) }, at)
               .to(q(".meter-bar i"), { scaleX: (i + 1) / parts.length, duration: 0.4, ease: SNAP }, at);
           });
 
-          const end = 1.05 + parts.length * 0.42 + 0.15;
+          const end = 1.05 + parts.length * STEP + 0.15;
           tl.call(() => {
             ms.dataset.built = "";
             extras.forEach(done);
           }, [], end)
+            .to(scrollPos, { y: 0, duration: 0.7, ease: "power3.inOut", onUpdate: () => (scroller.scrollTop = scrollPos.y) }, end)
             .fromTo(
               q(".qc-stamp"),
               { opacity: 0, scale: 1.9, rotate: -14 },
               { opacity: 1, scale: 1, rotate: -8, duration: 0.32, ease: "power4.in" },
-              end + 0.35,
+              end + 0.75,
             )
-            .fromTo(q(".hero-frame"), { x: 0 }, { x: 3, duration: 0.05, repeat: 3, yoyo: true, ease: "none", clearProps: "x" }, end + 0.67);
+            .fromTo(q(".hero-frame"), { x: 0 }, { x: 3, duration: 0.05, repeat: 3, yoyo: true, ease: "none", clearProps: "x" }, end + 1.07);
         },
       );
     },
@@ -117,10 +133,24 @@ export default function Hero({ dict, name, onName, onSector, onBuild, onPricing 
   useEffect(() => {
     if (!assembled || !auto) return;
     const id = window.setInterval(() => {
+      if (document.hidden) return;
       setSector((s) => SECTORS[(SECTORS.indexOf(s) + 1) % SECTORS.length]);
-    }, 3200);
+    }, 5200);
     return () => window.clearInterval(id);
   }, [assembled, auto]);
+
+  // The finished site scrolls by itself inside the frame, like a screen recording.
+  useEffect(() => {
+    if (!assembled) return;
+    const scroller = root.current?.querySelector<HTMLElement>(".hero-frame .ms-scroll");
+    if (!scroller) return;
+    let stop = () => {};
+    const id = window.setTimeout(() => (stop = scrollTour(scroller, 0.5)), 900);
+    return () => {
+      window.clearTimeout(id);
+      stop();
+    };
+  }, [assembled, sector]);
 
   const pick = (s: Sector) => {
     setAuto(false);
@@ -130,7 +160,7 @@ export default function Hero({ dict, name, onName, onSector, onBuild, onPricing 
     if (ms) ms.dataset.built = "";
   };
 
-  const m = dict.mock[sector];
+  const m = dict.tpl[sector];
 
   return (
     <section className="hero" id="top" ref={root}>
@@ -189,7 +219,7 @@ export default function Hero({ dict, name, onName, onSector, onBuild, onPricing 
               <i />
               <i />
               <i />
-              <span className="url">{slug(name, slug(m.name, sector))}.com</span>
+              <span className="url">{slug(name, slug(m.brand, sector))}.com</span>
             </div>
             <div className="browser-screen">
               <MockSite
@@ -199,9 +229,10 @@ export default function Hero({ dict, name, onName, onSector, onBuild, onPricing 
                 features={HERO_FEATURES}
                 name={name}
                 variant="desktop"
-                mock={dict.mock}
-                common={dict.mockCommon}
+                tpl={dict.tpl}
+                common={dict.tplCommon}
                 labels={labels}
+                sizes="(max-width: 980px) 92vw, 46vw"
               />
               <div className="press" aria-hidden="true">
                 <span>PRESS</span>
