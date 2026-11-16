@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
   ...(process.env.NODE_ENV === "development" && {
     redirects: async () => [{ source: "/", destination: "/tr", permanent: false }],
   }),
+  // Hide the Next.js "N" badge that appears in the corner during development.
+  devIndicators: false,
   turbopack: { root: __dirname },
 };
 
