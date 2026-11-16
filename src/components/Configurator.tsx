@@ -16,12 +16,13 @@ import {
   SECTOR_THEME,
   SPEEDS,
   STYLES,
+  PRICES,
   WHATSAPP_NUMBER,
   accentFor,
+  money,
   encodeConfig,
   orderNumber,
   quote,
-  usd,
   type Config,
   type Feature,
 } from "@/lib/catalog";
@@ -81,6 +82,8 @@ export default function Configurator({ dict, lang, config, update }: Props) {
   // The highlight belongs to the page it was added on, not to the next template.
   const flashPart = flash && flash.sector === config.sector ? flash.part : null;
 
+  const usd = (n: number) => money(n, config.currency);
+  const P = PRICES[config.currency];
   const q = quote(config);
   const price = useRolling(q.price);
   const days = useRolling(q.days);
@@ -380,7 +383,7 @@ export default function Configurator({ dict, lang, config, update }: Props) {
                         <small>{t.designs[d].desc}</small>
                       </span>
                       <span className="opt-price">
-                        <bdi>{DESIGN_INFO[d].price ? `+${usd(DESIGN_INFO[d].price)}` : usd(0)}</bdi>
+                        <bdi>{P.design[d] ? `+${usd(P.design[d])}` : usd(0)}</bdi>
                         {DESIGN_INFO[d].days > 0 && (
                           <small>
                             <bdi>+{DESIGN_INFO[d].days}</bdi> {t.ticket.days}
@@ -452,7 +455,7 @@ export default function Configurator({ dict, lang, config, update }: Props) {
                         <small>{t.packages[p].desc}</small>
                       </span>
                       <span className="opt-price">
-                        {usd(PACKAGE_INFO[p].price)}
+                        {usd(P.plans[p])}
                         <small>
                           {PACKAGE_INFO[p].days} {t.ticket.days}
                         </small>
@@ -471,7 +474,7 @@ export default function Configurator({ dict, lang, config, update }: Props) {
                         <span className="ask-q">
                           {t.asks[f]}
                           <small>
-                            <bdi>+{usd(FEATURE_INFO[f].price)}</bdi>
+                            <bdi>+{usd(P.features[f])}</bdi>
                             {FEATURE_INFO[f].days > 0 && (
                               <>
                                 {" · "}

@@ -4,7 +4,7 @@ const tr: Dictionary = {
   meta: {
     title: "Software Fabrika: 3 günde hazır web siteleri ve uygulamalar",
     description:
-      "Restoranlar, spor salonları, klinikler, oto servisler, mağazalar ve girişimler için web siteleri ve uygulamalar. Üretim bandında yapılır, 10$'dan başlar, günler içinde teslim edilir.",
+      "Restoranlar, spor salonları, klinikler, oto servisler, mağazalar ve girişimler için web siteleri ve uygulamalar. Üretim bandında yapılır, fabrika fiyatıyla günler içinde teslim edilir.",
   },
   nav: {
     brand: "Software Fabrika",
@@ -13,11 +13,12 @@ const tr: Dictionary = {
     pricing: "Fiyatlar",
     cta: "WhatsApp",
     language: "Dil",
+    currency: "Para birimi",
   },
   hero: {
     eyebrow: "Bant 01 · çalışıyor",
     title: ["Web siteniz,", "3 günde", "üretilir."],
-    sub: "Restoranlar, spor salonları, klinikler, oto servisler, mağazalar ve girişimler için. Üretim bandında yapılır: hızlı, kusursuz ve 10$'dan başlayan fiyatlarla.",
+    sub: "Restoranlar, spor salonları, klinikler, oto servisler, mağazalar ve girişimler için. Üretim bandında yapılır: hızlı, kusursuz ve {money}'dan başlayan fiyatlarla.",
     nameLabel: "İşletmenizin adını yazın, bantta üretilsin",
     namePlaceholder: "ör. Kaya Oto",
     primary: "Kendininkini tasarla",
@@ -153,7 +154,7 @@ const tr: Dictionary = {
   },
   stats: [
     { value: 3, format: "{n} gün", label: "Ortalama web sitesi teslimi" },
-    { value: 10, format: "{n}$", label: "Aldığımız en küçük iş" },
+    { value: 10, format: "{money}", label: "Aldığımız en küçük iş" },
     { value: 3, format: "{n}", label: "Dil: Türkçe, İngilizce, Arapça" },
     { value: 24, format: "{n} sa", label: "Yanıt için en fazla bekleme" },
   ],

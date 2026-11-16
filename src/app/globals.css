@@ -344,9 +344,84 @@ html[lang="ar"] .h2 {
   background: var(--cream);
   color: var(--forest);
 }
+.cur button {
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: rgb(243 239 227 / 0.6);
+  font: inherit;
+  transition:
+    background 0.25s,
+    color 0.25s;
+}
+.cur button:hover {
+  color: var(--cream);
+}
+.cur button[aria-pressed="true"] {
+  background: var(--sage);
+  color: var(--forest);
+}
+/* small screens: the currency becomes one compact dropdown */
+.cur-select {
+  display: none;
+  position: relative;
+}
+.cur-select select {
+  appearance: none;
+  height: 33px;
+  padding: 0 26px 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgb(243 239 227 / 0.14);
+  background: transparent;
+  color: var(--cream);
+  font: 500 11.5px var(--mono);
+  cursor: pointer;
+}
+.cur-select select option {
+  background: var(--forest);
+}
+.cur-select::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  inset-inline-end: 11px;
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+  color: rgb(243 239 227 / 0.6);
+}
+[dir="rtl"] .cur-select select {
+  padding: 0 12px 0 26px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+@media (max-width: 1100px) {
+  .nav-end .cur {
+    display: none;
+  }
+  .cur-select {
+    display: block;
+  }
+}
 @media (max-width: 860px) {
   .nav-links {
     display: none;
+  }
+}
+@media (max-width: 480px) {
+  .nav-end {
+    gap: 8px;
+  }
+  .nav-end .btn-sm {
+    padding-inline: 12px;
   }
 }
 @media (max-width: 420px) {

@@ -2,15 +2,14 @@
 
 import { useRef } from "react";
 import type { Dictionary } from "@/i18n/dictionaries/en";
-import { PLANS, PLAN_PRICE, SECTORS, WHATSAPP_NUMBER, usd, type Pkg } from "@/lib/catalog";
+import { PLANS, PRICES, SECTORS, WHATSAPP_NUMBER, minPrice, money, type Currency, type Pkg } from "@/lib/catalog";
 import { gsap, useGSAP } from "@/lib/motion";
 import Logo from "./Logo";
 
 const wa = (text: string) => `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
 
-export function Pricing({ dict, onPick }: { dict: Dictionary; onPick: (p: Pkg) => void }) {
+export function Pricing({ dict, currency, onPick }: { dict: Dictionary; currency: Currency; onPick: (p: Pkg) => void }) {
   const t = dict.pricing;
-  const money = usd;
 
   return (
     <section className="pricing section light" id="pricing">
@@ -31,7 +30,7 @@ export function Pricing({ dict, onPick }: { dict: Dictionary; onPick: (p: Pkg) =
                 </div>
                 <h3>{plan.name}</h3>
                 <p className="plan-desc">{plan.desc}</p>
-                <p className="plan-price">{money(PLAN_PRICE[p])}</p>
+                <p className="plan-price">{money(PRICES[currency].plans[p], currency)}</p>
                 <ul>
                   {plan.items.map((it) => (
                     <li key={it}>{it}</li>
@@ -60,37 +59,41 @@ export function Pricing({ dict, onPick }: { dict: Dictionary; onPick: (p: Pkg) =
   );
 }
 
-export function Stats({ dict }: { dict: Dictionary }) {
+export function Stats({ dict, currency }: { dict: Dictionary; currency: Currency }) {
   const root = useRef<HTMLElement>(null);
+  // "{money}" stats show the smallest job in the chosen currency; the others count a plain number.
+  const show = (format: string, v: number) =>
+    format.includes("{money}") ? format.replace("{money}", money(v, currency)) : format.replace("{n}", String(v));
+  const target = (s: Dictionary["stats"][number]) => (s.format.includes("{money}") ? minPrice(currency) : s.value);
 
   useGSAP(
     () => {
       gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", () => {
         (gsap.utils.toArray(".stat", root.current) as HTMLElement[]).forEach((el) => {
           const out = el.querySelector<HTMLElement>(".stat-value")!;
-          const target = Number(el.dataset.value);
+          const end = Number(el.dataset.value);
           const format = el.dataset.format!;
           const o = { v: 0 };
-          out.textContent = format.replace("{n}", "0");
+          out.textContent = show(format, 0);
           gsap.to(o, {
-            v: target,
+            v: end,
             duration: 1.6,
             ease: "expo.out",
             scrollTrigger: { trigger: el, start: "top 85%", once: true },
-            onUpdate: () => (out.textContent = format.replace("{n}", String(Math.round(o.v)))),
+            onUpdate: () => (out.textContent = show(format, Math.round(o.v))),
           });
         });
       });
     },
-    { scope: root },
+    { scope: root, dependencies: [currency], revertOnUpdate: true },
   );
 
   return (
     <section className="stats light" ref={root}>
       <div className="wrap stats-grid">
         {dict.stats.map((s) => (
-          <div className="stat" key={s.label} data-value={s.value} data-format={s.format} data-reveal>
-            <span className="stat-value">{s.format.replace("{n}", String(s.value))}</span>
+          <div className="stat" key={s.label} data-value={target(s)} data-format={s.format} data-reveal>
+            <span className="stat-value">{show(s.format, target(s))}</span>
             <span className="stat-label">{s.label}</span>
           </div>
         ))}

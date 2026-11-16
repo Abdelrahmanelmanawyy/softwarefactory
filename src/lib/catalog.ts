@@ -38,28 +38,70 @@ export type Speed = (typeof SPEEDS)[number];
 export const PLANS = ["quickfix", "landing", "website", "mvp"] as const;
 export type Plan = (typeof PLANS)[number];
 
-export const PLAN_PRICE: Record<Plan, number> = { quickfix: 10, landing: 49, website: 149, mvp: 499 };
+/** Currencies the visitor can switch between (like the language switch). Turkish lira is the default. */
+export const CURRENCIES = ["TRY", "USD", "EGP"] as const;
+export type Currency = (typeof CURRENCIES)[number];
+export const DEFAULT_CURRENCY: Currency = "TRY";
+export const CURRENCY_LABEL: Record<Currency, string> = { TRY: "₺ TL", USD: "$ USD", EGP: "E£ EGP" };
 
-export const PACKAGE_INFO: Record<Pkg, { price: number; days: number }> = {
-  landing: { price: PLAN_PRICE.landing, days: 2 },
-  website: { price: PLAN_PRICE.website, days: 3 },
-  mvp: { price: PLAN_PRICE.mvp, days: 7 },
+/**
+ * Price lists, one per currency. These are set by hand (clean numbers, not live conversions).
+ * Set from mid-November 2026 rates: 1 USD ≈ 50.4 TRY ≈ 53.4 EGP. Review them when the rate moves.
+ */
+export const PRICES: Record<
+  Currency,
+  { plans: Record<Plan, number>; features: Record<Feature, number>; design: Record<Design, number>; rushStep: number }
+> = {
+  TRY: {
+    plans: { quickfix: 499, landing: 2499, website: 7499, mvp: 24999 },
+    features: { catalog: 999, booking: 1999, whatsapp: 499, payments: 2999, admin: 4499, app: 12499, lang: 1499 },
+    design: { ready: 0, logo: 0, none: 999 },
+    rushStep: 50,
+  },
+  USD: {
+    plans: { quickfix: 10, landing: 49, website: 149, mvp: 499 },
+    features: { catalog: 20, booking: 40, whatsapp: 10, payments: 60, admin: 90, app: 250, lang: 30 },
+    design: { ready: 0, logo: 0, none: 20 },
+    rushStep: 1,
+  },
+  EGP: {
+    plans: { quickfix: 549, landing: 2599, website: 7999, mvp: 26999 },
+    features: { catalog: 1099, booking: 2199, whatsapp: 549, payments: 3199, admin: 4799, app: 13499, lang: 1599 },
+    design: { ready: 0, logo: 0, none: 1099 },
+    rushStep: 50,
+  },
 };
 
-export const FEATURE_INFO: Record<Feature, { price: number; days: number }> = {
-  catalog: { price: 20, days: 0 },
-  booking: { price: 40, days: 1 },
-  whatsapp: { price: 10, days: 0 },
-  payments: { price: 60, days: 1 },
-  admin: { price: 90, days: 2 },
-  app: { price: 250, days: 5 },
-  lang: { price: 30, days: 1 },
+/** Format an amount in the chosen currency: ₺7.499 · $149 · E£7,999 */
+export function money(n: number, cur: Currency): string {
+  if (cur === "TRY") return "₺" + n.toLocaleString("tr-TR");
+  if (cur === "EGP") return "E£" + n.toLocaleString("en-US");
+  return "$" + n.toLocaleString("en-US");
+}
+
+/** Smallest job we take, in the chosen currency (used in the headline and the stats). */
+export const minPrice = (cur: Currency) => PRICES[cur].plans.quickfix;
+
+export const PACKAGE_INFO: Record<Pkg, { days: number }> = {
+  landing: { days: 2 },
+  website: { days: 3 },
+  mvp: { days: 7 },
 };
 
-export const DESIGN_INFO: Record<Design, { price: number; days: number }> = {
-  ready: { price: 0, days: 0 },
-  logo: { price: 0, days: 0 },
-  none: { price: 20, days: 1 },
+export const FEATURE_INFO: Record<Feature, { days: number }> = {
+  catalog: { days: 0 },
+  booking: { days: 1 },
+  whatsapp: { days: 0 },
+  payments: { days: 1 },
+  admin: { days: 2 },
+  app: { days: 5 },
+  lang: { days: 1 },
+};
+
+export const DESIGN_INFO: Record<Design, { days: number }> = {
+  ready: { days: 0 },
+  logo: { days: 0 },
+  none: { days: 1 },
 };
 
 /** Express = rush queue: +30% of the total, and the delivery time is cut by 40%. */
@@ -104,8 +146,6 @@ export function onColor(hex: string): string {
   return lum > 0.4 ? "#111111" : "#FFFFFF";
 }
 
-/** Prices are in US dollars everywhere; "$149" reads the same in TR, EN and AR. */
-export const usd = (n: number) => "$" + n.toLocaleString("en-US");
 
 export type Config = {
   sector: Sector;
@@ -116,6 +156,7 @@ export type Config = {
   name: string;
   design: Design;
   speed: Speed;
+  currency: Currency;
 };
 
 export const DEFAULT_CONFIG: Config = {
@@ -127,14 +168,22 @@ export const DEFAULT_CONFIG: Config = {
   name: "",
   design: "logo",
   speed: "standard",
+  currency: DEFAULT_CURRENCY,
 };
 
 export type QuoteLine = { id: string; kind: "feature" | "design" | "speed"; key: string; price: number; days: number };
 
 export function quote(c: Config) {
-  const base = PACKAGE_INFO[c.pkg];
-  const lines: QuoteLine[] = c.features.map((f) => ({ id: `f-${f}`, kind: "feature", key: f, ...FEATURE_INFO[f] }));
-  const design = DESIGN_INFO[c.design];
+  const P = PRICES[c.currency];
+  const base = { price: P.plans[c.pkg], days: PACKAGE_INFO[c.pkg].days };
+  const lines: QuoteLine[] = c.features.map((f) => ({
+    id: `f-${f}`,
+    kind: "feature",
+    key: f,
+    price: P.features[f],
+    days: FEATURE_INFO[f].days,
+  }));
+  const design = { price: P.design[c.design], days: DESIGN_INFO[c.design].days };
   if (design.price || design.days) lines.push({ id: "design", kind: "design", key: c.design, ...design });
 
   const sub = base.price + lines.reduce((s, l) => s + l.price, 0);
@@ -143,7 +192,7 @@ export function quote(c: Config) {
   let rush = 0;
   let days = subDays;
   if (c.speed === "express") {
-    rush = Math.round(sub * EXPRESS.surcharge);
+    rush = Math.round((sub * EXPRESS.surcharge) / P.rushStep) * P.rushStep;
     days = Math.max(1, Math.ceil(subDays * EXPRESS.daysFactor));
     lines.push({ id: "speed", kind: "speed", key: "express", price: rush, days: days - subDays });
   }
@@ -163,6 +212,7 @@ export function encodeConfig(c: Config): string {
   p.set("f", c.features.join("."));
   p.set("d", c.design);
   p.set("v", c.speed);
+  p.set("m", c.currency);
   if (c.name.trim()) p.set("n", c.name.trim().slice(0, 40));
   return p.toString();
 }
@@ -176,12 +226,14 @@ export function decodeConfig(search: string): Partial<Config> {
   const color = pick(COLORS, p.get("c"));
   const design = pick(DESIGNS, p.get("d"));
   const speed = pick(SPEEDS, p.get("v"));
+  const currency = pick(CURRENCIES, p.get("m"));
   if (sector) out.sector = sector;
   if (pkg) out.pkg = pkg;
   if (style) out.style = style;
   if (color) out.color = color;
   if (design) out.design = design;
   if (speed) out.speed = speed;
+  if (currency) out.currency = currency;
   const f = p.get("f");
   if (f !== null) out.features = f.split(".").filter((x): x is Feature => (FEATURES as readonly string[]).includes(x));
   const n = p.get("n");

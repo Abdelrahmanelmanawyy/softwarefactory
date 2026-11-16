@@ -4,7 +4,17 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Lenis from "lenis";
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import { BASE_PATH, LOCALES, LOCALE_META, type Locale } from "@/i18n/config";
-import { DEFAULT_CONFIG, WHATSAPP_NUMBER, decodeConfig, encodeConfig, type Config, type Pkg } from "@/lib/catalog";
+import {
+  CURRENCIES,
+  CURRENCY_LABEL,
+  DEFAULT_CONFIG,
+  WHATSAPP_NUMBER,
+  decodeConfig,
+  encodeConfig,
+  type Config,
+  type Currency,
+  type Pkg,
+} from "@/lib/catalog";
 import { gsap, ScrollTrigger, useGSAP, scrollToId, setLenis, prefersReducedMotion } from "@/lib/motion";
 import Hero from "./Hero";
 import Logo from "./Logo";
@@ -12,7 +22,19 @@ import Process from "./Process";
 import Configurator from "./Configurator";
 import { Pricing, Stats, FinalCta, Footer } from "./Sections";
 
-function Nav({ dict, lang }: { dict: Dictionary; lang: Locale }) {
+const CURRENCY_KEY = "sf-currency";
+
+function Nav({
+  dict,
+  lang,
+  currency,
+  onCurrency,
+}: {
+  dict: Dictionary;
+  lang: Locale;
+  currency: Currency;
+  onCurrency: (c: Currency) => void;
+}) {
   const t = dict.nav;
   const go = (id: string) => (e: React.MouseEvent) => {
     e.preventDefault();
@@ -45,6 +67,23 @@ function Nav({ dict, lang }: { dict: Dictionary; lang: Locale }) {
               </a>
             ))}
           </div>
+          <div className="lang cur" role="group" aria-label={t.currency}>
+            {CURRENCIES.map((c) => (
+              <button key={c} type="button" aria-pressed={c === currency} title={CURRENCY_LABEL[c]} onClick={() => onCurrency(c)}>
+                {CURRENCY_LABEL[c].split(" ")[0]}
+              </button>
+            ))}
+          </div>
+          <label className="cur-select">
+            <span className="sr-only">{t.currency}</span>
+            <select value={currency} onChange={(e) => onCurrency(e.target.value as Currency)}>
+              {CURRENCIES.map((c) => (
+                <option key={c} value={c}>
+                  {CURRENCY_LABEL[c]}
+                </option>
+              ))}
+            </select>
+          </label>
           <a
             className="btn btn-signal btn-sm"
             href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(dict.cta.message)}`}
@@ -99,11 +138,19 @@ export default function Site({ dict, lang }: { dict: Dictionary; lang: Locale })
   }, []);
 
   // Restore a shared configuration from the URL, then jump to the order desk.
+  // The currency comes from the URL if present, otherwise from the visitor's last choice.
   useEffect(() => {
+    let saved: string | null = null;
+    try {
+      saved = window.localStorage.getItem(CURRENCY_KEY);
+    } catch {}
     const fromUrl = decodeConfig(window.location.search);
-    if (!Object.keys(fromUrl).length) return;
-    const raf = requestAnimationFrame(() => setConfig((c) => ({ ...c, ...fromUrl })));
-    const id = window.setTimeout(() => scrollToId("build"), 300);
+    const patch: Partial<Config> = { ...fromUrl };
+    if (!patch.currency && (CURRENCIES as readonly string[]).includes(saved ?? "")) patch.currency = saved as Currency;
+    if (!Object.keys(patch).length) return;
+    const raf = requestAnimationFrame(() => setConfig((c) => ({ ...c, ...patch })));
+    // Only a shared order (it has a sector) jumps to the order desk.
+    const id = fromUrl.sector ? window.setTimeout(() => scrollToId("build"), 300) : 0;
     return () => {
       cancelAnimationFrame(raf);
       window.clearTimeout(id);
@@ -136,6 +183,13 @@ export default function Site({ dict, lang }: { dict: Dictionary; lang: Locale })
     });
   });
 
+  const setCurrency = useCallback((currency: Currency) => {
+    try {
+      window.localStorage.setItem(CURRENCY_KEY, currency);
+    } catch {}
+    setConfig((c) => ({ ...c, currency }));
+  }, []);
+
   const pickPackage = (p: Pkg) => {
     update({ pkg: p });
     scrollToId("build");
@@ -143,11 +197,12 @@ export default function Site({ dict, lang }: { dict: Dictionary; lang: Locale })
 
   return (
     <>
-      <Nav dict={dict} lang={lang} />
+      <Nav dict={dict} lang={lang} currency={config.currency} onCurrency={setCurrency} />
       <main>
         <Hero
           dict={dict}
           name={config.name}
+          currency={config.currency}
           onName={(name) => update({ name })}
           onSector={(sector) => update({ sector })}
           onBuild={() => scrollToId("build")}
@@ -155,8 +210,8 @@ export default function Site({ dict, lang }: { dict: Dictionary; lang: Locale })
         />
         <Process dict={dict} />
         <Configurator dict={dict} lang={lang} config={config} update={update} />
-        <Stats dict={dict} />
-        <Pricing dict={dict} onPick={pickPackage} />
+        <Stats dict={dict} currency={config.currency} />
+        <Pricing dict={dict} currency={config.currency} onPick={pickPackage} />
         <FinalCta dict={dict} />
       </main>
       <Footer dict={dict} />

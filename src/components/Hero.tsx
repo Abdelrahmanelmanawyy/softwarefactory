@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { Dictionary } from "@/i18n/dictionaries/en";
-import { SECTORS, SECTOR_THEME, type Feature, type Sector } from "@/lib/catalog";
+import { SECTORS, SECTOR_THEME, minPrice, money, type Currency, type Feature, type Sector } from "@/lib/catalog";
 import { gsap, useGSAP, SNAP, scrollTour } from "@/lib/motion";
 import MockSite from "./MockSite";
 
@@ -22,13 +22,14 @@ function slug(name: string, fallback: string) {
 type Props = {
   dict: Dictionary;
   name: string;
+  currency: Currency;
   onName: (v: string) => void;
   onSector: (s: Sector) => void;
   onBuild: () => void;
   onPricing: () => void;
 };
 
-export default function Hero({ dict, name, onName, onSector, onBuild, onPricing }: Props) {
+export default function Hero({ dict, name, currency, onName, onSector, onBuild, onPricing }: Props) {
   const t = dict.hero;
   const root = useRef<HTMLElement>(null);
   const [sector, setSector] = useState<Sector>("restaurant");
@@ -178,7 +179,7 @@ export default function Hero({ dict, name, onName, onSector, onBuild, onPricing 
               </span>
             ))}
           </h1>
-          <p className="hero-sub hero-fade">{t.sub}</p>
+          <p className="hero-sub hero-fade">{t.sub.replace("{money}", money(minPrice(currency), currency))}</p>
 
           <label className="name-field hero-fade">
             <span className="label">{t.nameLabel}</span>

@@ -2,7 +2,7 @@ const en = {
   meta: {
     title: "Software Fabrika: websites and apps built in 3 days",
     description:
-      "Websites and apps for restaurants, gyms, clinics, auto services, stores and startups. Built on a production line, from $10, delivered in days.",
+      "Websites and apps for restaurants, gyms, clinics, auto services, stores and startups. Built on a production line, at factory prices, delivered in days.",
   },
   nav: {
     brand: "Software Fabrika",
@@ -11,11 +11,12 @@ const en = {
     pricing: "Prices",
     cta: "WhatsApp",
     language: "Language",
+    currency: "Currency",
   },
   hero: {
     eyebrow: "Line 01 · running",
     title: ["Your website,", "manufactured", "in 3 days."],
-    sub: "For restaurants, gyms, clinics, auto services, stores and startups. Built on a production line: fast, precise, and priced from $10.",
+    sub: "For restaurants, gyms, clinics, auto services, stores and startups. Built on a production line: fast, precise, and priced from {money}.",
     nameLabel: "Type your business name and watch it get built",
     namePlaceholder: "e.g. Kaya Auto",
     primary: "Build yours",
@@ -151,7 +152,7 @@ const en = {
   },
   stats: [
     { value: 3, format: "{n} days", label: "Typical website delivery" },
-    { value: 10, format: "${n}", label: "Smallest job we take" },
+    { value: 10, format: "{money}", label: "Smallest job we take" },
     { value: 3, format: "{n}", label: "Languages: Turkish, English, Arabic" },
     { value: 24, format: "{n} h", label: "Longest you wait for a reply" },
   ],
