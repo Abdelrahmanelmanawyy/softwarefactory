@@ -22,19 +22,16 @@ export async function sendOrderEmail(o: OrderMail): Promise<MailResult> {
 
   if (WEB3FORMS_KEY) {
     try {
-      const res = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          access_key: WEB3FORMS_KEY,
-          subject: o.subject,
-          from_name: "Software Fabrika website",
-          name: o.name,
-          phone: o.phone || undefined,
-          email: o.email || undefined,
-          message: o.message,
-        }),
-      });
+      // FormData keeps this a "simple" request (no CORS preflight, which the API rejects).
+      const body = new FormData();
+      body.append("access_key", WEB3FORMS_KEY);
+      body.append("subject", o.subject);
+      body.append("from_name", "Software Fabrika website");
+      body.append("name", o.name);
+      if (o.phone) body.append("phone", o.phone);
+      if (o.email) body.append("email", o.email);
+      body.append("message", o.message);
+      const res = await fetch("https://api.web3forms.com/submit", { method: "POST", body });
       const json = (await res.json()) as { success?: boolean };
       return res.ok && json.success ? "sent" : "failed";
     } catch {

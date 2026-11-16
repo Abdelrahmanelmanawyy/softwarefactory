@@ -2,7 +2,7 @@
 // their prices and delivery times. Edit numbers here and the whole site follows.
 
 /** WhatsApp number in international format, digits only (no +, no spaces). */
-export const WHATSAPP_NUMBER = "905000000000"; // TODO: replace with the real business number
+export const WHATSAPP_NUMBER = "905386175291";
 
 /**
  * Where e-mail orders go.
@@ -10,7 +10,7 @@ export const WHATSAPP_NUMBER = "905000000000"; // TODO: replace with the real bu
  *   it is safe to keep in public code: it can only deliver to the address you registered).
  * - only ORDER_EMAIL set -> the customer's mail app opens with the order already written.
  */
-export const WEB3FORMS_KEY = ""; // TODO: paste your Web3Forms access key
+export const WEB3FORMS_KEY = "b5a3e545-d44d-497f-962e-13178b86bd8d"; // public key from web3forms.com
 export const ORDER_EMAIL = ""; // TODO: e.g. orders@yourdomain.com
 
 export const SECTORS = ["restaurant", "gym", "clinic", "auto", "store", "startup"] as const;
