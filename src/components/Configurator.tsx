@@ -30,6 +30,7 @@ import { sendOrderEmail } from "@/lib/order";
 import { photo } from "@/lib/photos";
 import { gsap, ScrollTrigger, useGSAP, prefersReducedMotion, scrollTour } from "@/lib/motion";
 import MockSite from "./MockSite";
+import { useOffer } from "@/lib/useOffer";
 
 const noopSubscribe = () => () => {};
 
@@ -84,7 +85,9 @@ export default function Configurator({ dict, lang, config, update }: Props) {
 
   const usd = (n: number) => money(n, config.currency);
   const P = PRICES[config.currency];
-  const q = quote(config);
+  const offer = useOffer();
+  const q = quote(config, offer.percentNow);
+  const full = useRolling(q.full);
   const price = useRolling(q.price);
   const days = useRolling(q.days);
   const order = orderNumber(config);
@@ -241,7 +244,12 @@ export default function Configurator({ dict, lang, config, update }: Props) {
     .replace("{order}", order)
     .replace("{contact}", who)
     .replace("{link}", shareLink);
-  const fullMessage = contact.note.trim() ? `${message}\n\n${contact.note.trim()}` : message;
+  const offerNote =
+    q.price < q.full
+      ? dict.offer.message.replace("{pct}", String(offer.percentNow)).replace("{full}", usd(q.full))
+      : "";
+  const withOffer = offerNote ? `${message}\n${offerNote}` : message;
+  const fullMessage = contact.note.trim() ? `${withOffer}\n\n${contact.note.trim()}` : withOffer;
   const waHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(fullMessage)}`;
 
   const eta = today
@@ -286,11 +294,17 @@ export default function Configurator({ dict, lang, config, update }: Props) {
   });
 
   const lineName = (l: (typeof q.lines)[number]) =>
-    l.kind === "feature" ? t.features[l.key as Feature] : l.kind === "design" ? t.ticket.logoLine : t.ticket.expressLine;
+    l.kind === "feature"
+      ? t.features[l.key as Feature]
+      : l.kind === "design"
+        ? t.ticket.logoLine
+        : l.kind === "offer"
+          ? dict.offer.line.replace("{pct}", l.key)
+          : t.ticket.expressLine;
 
   const stdDays = quote({ ...config, speed: "standard" }).days;
   const expQuote = quote({ ...config, speed: "express" });
-  const expExtra = expQuote.price - quote({ ...config, speed: "standard" }).price;
+  const expExtra = expQuote.full - quote({ ...config, speed: "standard" }).full;
 
   const qa = t.q[current];
   const mailNote =
@@ -536,16 +550,24 @@ export default function Configurator({ dict, lang, config, update }: Props) {
                       </dt>
                       <dd>{usd(q.base.price)}</dd>
                     </div>
-                    {q.lines.map((l) => (
-                      <div key={l.id}>
-                        <dt>+ {lineName(l)}</dt>
-                        <dd>{usd(l.price)}</dd>
-                      </div>
-                    ))}
+                    {q.lines.map((l) =>
+                      l.kind === "offer" ? (
+                        <div key={l.id} className="ticket-offer">
+                          <dt>★ {lineName(l)}</dt>
+                          <dd>−{usd(-l.price)}</dd>
+                        </div>
+                      ) : (
+                        <div key={l.id}>
+                          <dt>+ {lineName(l)}</dt>
+                          <dd>{usd(l.price)}</dd>
+                        </div>
+                      ),
+                    )}
                   </dl>
                   <div className="ticket-total">
                     <div>
                       <span>{t.ticket.total}</span>
+                      {q.price < q.full && <s className="was">{usd(full)}</s>}
                       <strong>{usd(price)}</strong>
                     </div>
                     <div>
@@ -603,6 +625,11 @@ export default function Configurator({ dict, lang, config, update }: Props) {
                 {t.back}
               </button>
               <div className="quiz-price" aria-live="polite">
+                {q.price < q.full && (
+                  <s className="was">
+                    {usd(full)} <em>-{dict.offer.pct.replace("{pct}", String(offer.percentNow))}</em>
+                  </s>
+                )}
                 <strong>{usd(price)}</strong>
                 <span>
                   {days} {t.ticket.days}

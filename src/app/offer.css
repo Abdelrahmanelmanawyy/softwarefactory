@@ -1,0 +1,332 @@
+/* ==========================================================================
+   Launch offer: strip on top of the nav, campaign section, crossed-out prices
+   ========================================================================== */
+
+/* While the offer runs the nav is taller; everything that uses --nav-h follows. */
+html:has(.offer-bar) {
+  --nav-h: 100px;
+}
+.nav:has(.offer-bar) {
+  display: flex;
+  flex-direction: column;
+}
+.offer-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  height: 36px;
+  flex: none;
+  padding-inline: var(--gutter);
+  overflow: hidden;
+  font-size: 13.5px;
+  color: var(--forest);
+  background: linear-gradient(90deg, #a6c893, #d7e8c6 40%, #a6c893 60%, #7fa36f);
+  background-size: 250% 100%;
+  animation: offer-sheen 7s linear infinite;
+}
+@keyframes offer-sheen {
+  to {
+    background-position: -250% 0;
+  }
+}
+.offer-bar:hover .offer-bar-cta {
+  transform: translateX(4px);
+}
+[dir="rtl"] .offer-bar:hover .offer-bar-cta {
+  transform: translateX(-4px) scaleX(-1);
+}
+.offer-bar-badge {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--forest);
+  color: var(--sage-hi);
+  font: 700 12px/1.4 var(--mono);
+}
+.offer-bar-text {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.offer-bar-text b {
+  font-weight: 700;
+}
+.offer-bar-places {
+  flex: none;
+  font-weight: 600;
+  padding-inline-start: 14px;
+  border-inline-start: 1px solid rgb(11 21 16 / 0.25);
+}
+.offer-bar-time {
+  flex: none;
+  font: 600 12.5px var(--mono);
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+}
+.offer-bar-cta {
+  flex: none;
+  font-weight: 700;
+  transition: transform 0.3s var(--ease);
+}
+[dir="rtl"] .offer-bar-cta {
+  transform: scaleX(-1);
+}
+@media (max-width: 860px) {
+  .offer-bar-long,
+  .offer-bar-places {
+    display: none;
+  }
+}
+@media (max-width: 420px) {
+  .offer-bar {
+    gap: 10px;
+    font-size: 12.5px;
+  }
+}
+
+/* ---------- campaign section ---------- */
+.offer {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border-block: 1px solid var(--line);
+}
+.offer-glow {
+  position: absolute;
+  z-index: -1;
+  inset: -20% auto auto -10%;
+  width: 70vw;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgb(127 163 111 / 0.22), transparent 62%);
+  pointer-events: none;
+}
+[dir="rtl"] .offer-glow {
+  inset: -20% -10% auto auto;
+}
+.offer-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(32px, 6vw, 96px);
+  align-items: center;
+}
+.offer-seal {
+  position: relative;
+  width: min(100%, 460px);
+  aspect-ratio: 1;
+  margin-inline: auto;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgb(166 200 147 / 0.28), transparent 60%),
+    radial-gradient(circle, var(--forest-2) 58%, transparent 58.5%);
+  box-shadow:
+    inset 0 0 0 1px rgb(166 200 147 / 0.25),
+    0 40px 120px -40px rgb(127 163 111 / 0.55);
+}
+.offer-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  animation: offer-spin 28s linear infinite;
+}
+.offer-ring text {
+  font: 600 13.5px var(--font-mono), var(--font-arabic), monospace;
+  fill: var(--sage-hi);
+}
+html[lang="ar"] .offer-ring text {
+  letter-spacing: 0.05em;
+  font-family: var(--font-arabic), sans-serif;
+}
+@keyframes offer-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.offer-pct {
+  display: flex;
+  align-items: flex-start;
+  font-size: clamp(5.5rem, 13vw, 10.5rem);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.06em;
+  background: linear-gradient(160deg, #f3efe3 20%, #a6c893 55%, #4c7142);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  direction: ltr;
+  filter: drop-shadow(0 10px 30px rgb(0 0 0 / 0.35));
+}
+.offer-pct span {
+  font-size: 0.42em;
+  margin-top: 0.12em;
+  margin-left: 0.04em;
+  letter-spacing: 0;
+}
+/* Turkish writes the sign first: %60 */
+.offer-pct[data-before] span {
+  order: -1;
+  margin-left: 0;
+  margin-right: 0.04em;
+}
+.offer-copy {
+  display: grid;
+  gap: 22px;
+  justify-items: start;
+}
+.offer-copy .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.offer-copy .lead {
+  max-width: 52ch;
+}
+.offer-clock {
+  display: grid;
+  gap: 10px;
+}
+.offer-tiles {
+  display: flex;
+  gap: 10px;
+  direction: ltr;
+}
+[dir="rtl"] .offer-tiles {
+  flex-direction: row-reverse;
+}
+.offer-tile {
+  display: grid;
+  justify-items: center;
+  min-width: 78px;
+  padding: 12px 10px 10px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgb(243 239 227 / 0.06), rgb(243 239 227 / 0.02));
+}
+.offer-tile b {
+  font-size: 34px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.offer-tile small {
+  margin-top: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+html[lang="ar"] .offer-tile small {
+  letter-spacing: 0;
+  font-family: var(--sans);
+}
+.offer-places {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-weight: 600;
+  color: var(--sage-hi);
+}
+.offer-dots {
+  display: flex;
+  gap: 6px;
+}
+.offer-dots i {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: var(--sage);
+  box-shadow: 0 0 14px rgb(127 163 111 / 0.6);
+}
+.offer-dots i[data-taken] {
+  background: rgb(243 239 227 / 0.12);
+  box-shadow: none;
+}
+.offer-perks {
+  display: grid;
+  gap: 8px;
+}
+.offer-perks li {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  color: var(--fg);
+}
+.offer-perks li::before {
+  content: "✓";
+  color: var(--sage-hi);
+  font-weight: 700;
+}
+@media (max-width: 860px) {
+  .offer-inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .offer-seal {
+    width: min(78%, 340px);
+  }
+  .offer-tile {
+    min-width: 0;
+    flex: 1;
+  }
+  .offer-tile b {
+    font-size: 28px;
+  }
+}
+
+/* ---------- crossed-out prices ---------- */
+.plan-price-offer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+.plan-price-offer s {
+  flex-basis: 100%;
+  font-size: 0.42em;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--muted);
+}
+.plan-off {
+  align-self: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--sage);
+  color: var(--forest);
+  font: 700 12px/1.3 var(--mono);
+  letter-spacing: 0;
+}
+.was {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.was em {
+  font-style: normal;
+  font-weight: 700;
+  color: var(--sage-hi);
+  text-decoration: none;
+  display: inline-block;
+}
+.ticket .was {
+  margin-bottom: 2px;
+}
+.ticket-offer dt,
+.ticket-offer dd {
+  color: var(--sage-deep) !important;
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .offer-bar,
+  .offer-ring {
+    animation: none;
+  }
+}

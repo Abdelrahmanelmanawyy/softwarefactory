@@ -2,7 +2,8 @@
 
 import { useRef } from "react";
 import type { Dictionary } from "@/i18n/dictionaries/en";
-import { PLANS, PRICES, SECTORS, WHATSAPP_NUMBER, minPrice, money, type Currency, type Pkg } from "@/lib/catalog";
+import { PLANS, PRICES, SECTORS, WHATSAPP_NUMBER, minPrice, money, offerPrice, type Currency, type Pkg } from "@/lib/catalog";
+import { useOffer } from "@/lib/useOffer";
 import { gsap, useGSAP } from "@/lib/motion";
 import Logo from "./Logo";
 
@@ -10,6 +11,7 @@ const wa = (text: string) => `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIC
 
 export function Pricing({ dict, currency, onPick }: { dict: Dictionary; currency: Currency; onPick: (p: Pkg) => void }) {
   const t = dict.pricing;
+  const offer = useOffer();
 
   return (
     <section className="pricing section light" id="pricing">
@@ -30,7 +32,15 @@ export function Pricing({ dict, currency, onPick }: { dict: Dictionary; currency
                 </div>
                 <h3>{plan.name}</h3>
                 <p className="plan-desc">{plan.desc}</p>
-                <p className="plan-price">{money(PRICES[currency].plans[p], currency)}</p>
+                {offer.percentNow && p !== "quickfix" ? (
+                  <p className="plan-price plan-price-offer">
+                    <s>{money(PRICES[currency].plans[p], currency)}</s>
+                    {money(offerPrice(PRICES[currency].plans[p], currency, offer.percentNow), currency)}
+                    <span className="plan-off">-{dict.offer.pct.replace("{pct}", String(offer.percentNow))}</span>
+                  </p>
+                ) : (
+                  <p className="plan-price">{money(PRICES[currency].plans[p], currency)}</p>
+                )}
                 <ul>
                   {plan.items.map((it) => (
                     <li key={it}>{it}</li>

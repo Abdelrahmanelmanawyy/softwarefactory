@@ -136,6 +136,21 @@ const en = {
     whatsapp:
       "Hello Software Fabrika! I'd like to order:\n\nBusiness: {name}\nType: {sector}\nPackage: {pkg}\nStyle: {style} · Palette: {color}\nDesign: {design}\nFeatures: {features}\nSpeed: {speed}\n\nEstimated price: {price}\nEstimated delivery: {days} days\nOrder: {order}\n\nMy name: {contact}\nMy configuration: {link}",
   },
+  offer: {
+    pct: "{pct}%",
+    badge: "Launch offer",
+    bar: "{pct}% off for the first {total} customers",
+    left: "{n} of {total} places left",
+    cta: "Claim the offer",
+    title: "{pct}% off. Only {total} places.",
+    sub: "Our launch campaign: the first {total} businesses get their website at {pct}% off. In return we ask for a Google review and permission to show your site as our work.",
+    ends: "Offer ends in",
+    units: { d: "days", h: "hours", m: "min", s: "sec" },
+    line: "Launch offer −{pct}%",
+    message: "Launch offer: {pct}% off (was {full})",
+    auto: "Applied automatically to your order.",
+    perks: ["Same quality, same 3-day delivery", "Fixed price in writing before we start", "Pay nothing until you approve the design"],
+  },
   pricing: {
     eyebrow: "Price list",
     title: "Factory prices. Agency quality.",

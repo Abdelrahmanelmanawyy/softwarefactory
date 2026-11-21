@@ -6,6 +6,7 @@ import { getDictionary } from "@/i18n/get-dictionary";
 import "../globals.css";
 import "../template.css";
 import "../quiz.css";
+import "../offer.css";
 
 const display = Space_Grotesk({ variable: "--font-display", subsets: ["latin", "latin-ext"], display: "swap" });
 const mono = JetBrains_Mono({ variable: "--font-mono", subsets: ["latin", "latin-ext"], display: "swap" });

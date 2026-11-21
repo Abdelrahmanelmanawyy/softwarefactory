@@ -21,6 +21,7 @@ import Logo from "./Logo";
 import Process from "./Process";
 import Configurator from "./Configurator";
 import { Pricing, Stats, FinalCta, Footer } from "./Sections";
+import { OfferBar, OfferSection } from "./Offer";
 
 const CURRENCY_KEY = "sf-currency";
 
@@ -50,6 +51,7 @@ function Nav({
   };
   return (
     <header className="nav">
+      <OfferBar dict={dict} />
       <div className="wrap nav-inner">
         <a href="#top" className="brand" onClick={go("top")} aria-label={t.brand}>
           <Logo brand={t.brand} />
@@ -209,6 +211,7 @@ export default function Site({ dict, lang }: { dict: Dictionary; lang: Locale })
           onPricing={() => scrollToId("pricing")}
         />
         <Process dict={dict} />
+        <OfferSection dict={dict} />
         <Configurator dict={dict} lang={lang} config={config} update={update} />
         <Stats dict={dict} currency={config.currency} />
         <Pricing dict={dict} currency={config.currency} onPick={pickPackage} />

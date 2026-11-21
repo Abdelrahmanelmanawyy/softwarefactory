@@ -138,6 +138,21 @@ const tr: Dictionary = {
     whatsapp:
       "Merhaba Software Fabrika! Sipariş vermek istiyorum:\n\nİşletme: {name}\nTür: {sector}\nPaket: {pkg}\nStil: {style} · Palet: {color}\nTasarım: {design}\nÖzellikler: {features}\nHız: {speed}\n\nTahmini fiyat: {price}\nTahmini teslim: {days} gün\nSipariş: {order}\n\nAdım: {contact}\nYapılandırmam: {link}",
   },
+  offer: {
+    pct: "%{pct}",
+    badge: "Açılış kampanyası",
+    bar: "İlk {total} müşteriye %{pct} indirim",
+    left: "{total} yerden {n} yer kaldı",
+    cta: "Fırsatı yakala",
+    title: "%{pct} indirim. Sadece {total} yer.",
+    sub: "Açılış kampanyamız: ilk {total} işletme web sitesini %{pct} indirimle alır. Karşılığında bir Google yorumu ve sitenizi örnek çalışma olarak göstermemize izin istiyoruz.",
+    ends: "Kampanyanın bitmesine",
+    units: { d: "gün", h: "saat", m: "dk", s: "sn" },
+    line: "Açılış kampanyası −%{pct}",
+    message: "Açılış kampanyası: %{pct} indirim (normal fiyat {full})",
+    auto: "Siparişinize otomatik uygulanır.",
+    perks: ["Aynı kalite, aynı 3 günde teslim", "İş başlamadan yazılı sabit fiyat", "Tasarımı onaylayana kadar ödeme yok"],
+  },
   pricing: {
     eyebrow: "Fiyat listesi",
     title: "Fabrika fiyatı. Ajans kalitesi.",

@@ -104,6 +104,33 @@ export const DESIGN_INFO: Record<Design, { days: number }> = {
   none: { days: 1 },
 };
 
+/**
+ * Launch offer. Change it here and the whole site follows: banner, price list, order desk and order messages.
+ * After each paid order, lower `placesLeft` by one and push. At 0 places, or after `ends`, the offer
+ * switches itself off.
+ */
+export const OFFER = {
+  active: true,
+  percent: 60,
+  places: 10,
+  placesLeft: 10,
+  ends: "2026-12-21T23:59:59+03:00", // Istanbul time
+};
+
+/** Is the offer running right now? Without a date (server render) only the settings are checked. */
+export function offerLive(now?: number): boolean {
+  if (!OFFER.active || OFFER.placesLeft <= 0) return false;
+  return now === undefined || now < Date.parse(OFFER.ends);
+}
+
+/** Price after the offer, rounded to a shop price: ₺2.999, $59, E£3,199. */
+export function offerPrice(n: number, cur: Currency, percent: number): number {
+  if (!percent || n <= 0) return n;
+  const x = (n * (100 - percent)) / 100;
+  if (cur === "USD") return x >= 10 ? Math.ceil(x) - 1 : Math.max(1, Math.round(x));
+  return Math.max(9, Math.ceil(x / 50) * 50 - 1);
+}
+
 /** Express = rush queue: +30% of the total, and the delivery time is cut by 40%. */
 export const EXPRESS = { surcharge: 0.3, daysFactor: 0.6 };
 
@@ -171,9 +198,10 @@ export const DEFAULT_CONFIG: Config = {
   currency: DEFAULT_CURRENCY,
 };
 
-export type QuoteLine = { id: string; kind: "feature" | "design" | "speed"; key: string; price: number; days: number };
+export type QuoteLine = { id: string; kind: "feature" | "design" | "speed" | "offer"; key: string; price: number; days: number };
 
-export function quote(c: Config) {
+/** `percent` is the running offer (0 = none). `full` is the price before it. */
+export function quote(c: Config, percent = 0) {
   const P = PRICES[c.currency];
   const base = { price: P.plans[c.pkg], days: PACKAGE_INFO[c.pkg].days };
   const lines: QuoteLine[] = c.features.map((f) => ({
@@ -196,7 +224,10 @@ export function quote(c: Config) {
     days = Math.max(1, Math.ceil(subDays * EXPRESS.daysFactor));
     lines.push({ id: "speed", kind: "speed", key: "express", price: rush, days: days - subDays });
   }
-  return { base, lines, price: sub + rush, days };
+  const full = sub + rush;
+  const price = offerPrice(full, c.currency, percent);
+  if (price < full) lines.push({ id: "offer", kind: "offer", key: String(percent), price: price - full, days: 0 });
+  return { base, lines, price, full, days };
 }
 
 const pick = <T extends string>(list: readonly T[], v: string | null): T | undefined =>

@@ -17,6 +17,7 @@ Turkish (default), English and Arabic (RTL).
 | --- | --- |
 | WhatsApp number | `WHATSAPP_NUMBER` in `src/lib/catalog.ts` |
 | E-mail orders | `WEB3FORMS_KEY` (free key from web3forms.com) or `ORDER_EMAIL` in `src/lib/catalog.ts` |
+| Launch offer: on/off, percent, places left, end date (lower `placesLeft` after each sale) | `OFFER` in `src/lib/catalog.ts` |
 | Prices in each currency (TRY default, USD, EGP), delivery days | `PRICES` in `src/lib/catalog.ts` |
 | All text, including the sample websites (TR / EN / AR) | `src/i18n/dictionaries/*.ts` |
 | Template photos | `public/photos/<sector>/` (1 = hero, 2-5 = sections; `-sm` = 640px copy). Sources in `public/photos/CREDITS.md` |
